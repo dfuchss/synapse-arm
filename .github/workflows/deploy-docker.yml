@@ -34,8 +34,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
-    timeout-minutes: 720
 
     steps:
       - uses: actions/checkout@v2
@@ -53,6 +51,7 @@ jobs:
 
       - name: Build and Push
         uses: docker/build-push-action@v2
+        timeout-minutes: 720
         with:
           context: .
           file: docker/Dockerfile
