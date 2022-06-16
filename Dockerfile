@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM docker.io/library/python:3.9
 RUN apt-get update && apt-get install -y \
     curl \
     gosu \
@@ -15,6 +15,12 @@ RUN apt-get update && apt-get install -y \
 
 COPY ./docker/start.py /start.py
 COPY ./docker/conf /conf
+
+ENV PYTHONUNBUFFERED=1
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+COPY pyproject.toml .
+RUN pip install setuptools_rust cryptography$(grep "cryptography = " pyproject.toml | cut -d "=" -f 2- | sed 's/"//g' | xargs) && rm pyproject.toml
 
 RUN pip install --prefix="/usr/local" matrix-synapse==$(curl --silent "https://api.github.com/repos/matrix-org/synapse/releases/latest" | jq -r .tag_name |  cut -c 2-)
 
