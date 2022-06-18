@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     libjemalloc2 \
     libssl-dev \
     openssl \
+    # Matrix Stuff
+    libjemalloc1 libpq5 \
     # For cryptography and native builds
     build-essential libssl-dev libffi-dev python3-dev cargo jq libjpeg-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -22,8 +24,7 @@ ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 COPY pyproject.toml .
 RUN pip install setuptools_rust cryptography$(grep "cryptography = " pyproject.toml | cut -d "=" -f 2- | sed 's/"//g' | xargs) && rm pyproject.toml
 
-RUN pip install --prefix="/usr/local" matrix-synapse==$(curl --silent "https://api.github.com/repos/matrix-org/synapse/releases/latest" | jq -r .tag_name |  cut -c 2-)
-RUN pip install psycopg2
+RUN pip install --prefix="/usr/local" matrix-synapse[postgres]==$(curl --silent "https://api.github.com/repos/matrix-org/synapse/releases/latest" | jq -r .tag_name |  cut -c 2-)
 
 EXPOSE 8008/tcp 8009/tcp 8448/tcp
 
