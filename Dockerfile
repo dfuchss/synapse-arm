@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     openssl \
     # Matrix Stuff
-    libjemalloc1 libpq5 \
+    libjemalloc-dev libpq5 \
     # For cryptography and native builds
     build-essential libssl-dev libffi-dev python3-dev cargo jq libjpeg-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
