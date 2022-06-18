@@ -1,3 +1,5 @@
+# DEPRECATED: This repo will be deleted within the next days.
+
 # synapse arm (Fork)
 [![Docker Push ARM & Other](https://github.com/dfuchss/synapse-arm/actions/workflows/deploy-docker.yml/badge.svg)](https://github.com/dfuchss/synapse-arm/actions/workflows/deploy-docker.yml)
 
