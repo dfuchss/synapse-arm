@@ -23,6 +23,7 @@ COPY pyproject.toml .
 RUN pip install setuptools_rust cryptography$(grep "cryptography = " pyproject.toml | cut -d "=" -f 2- | sed 's/"//g' | xargs) && rm pyproject.toml
 
 RUN pip install --prefix="/usr/local" matrix-synapse==$(curl --silent "https://api.github.com/repos/matrix-org/synapse/releases/latest" | jq -r .tag_name |  cut -c 2-)
+RUN pip install psycopg2
 
 EXPOSE 8008/tcp 8009/tcp 8448/tcp
 
