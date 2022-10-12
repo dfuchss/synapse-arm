@@ -1,31 +1,20 @@
-FROM docker.io/library/python:3.9
+FROM ubuntu
 RUN apt-get update && apt-get install -y \
     curl \
     gosu \
-    libjpeg62-turbo \
-    libpq5 \
-    libwebp6 \
+    libpq5 libpq-dev \
     xmlsec1 \
-    libjemalloc2 \
-    libssl-dev \
-    openssl \
-    # Matrix Stuff
-    libjemalloc-dev libpq5 \
-    # For cryptography and native builds
-    build-essential libssl-dev libffi-dev python3-dev cargo jq libjpeg-dev zlib1g-dev \
+    libjemalloc2 libjemalloc-dev \
+    libssl-dev openssl \
+    libffi-dev python3.9 cargo jq libjpeg-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && /usr/bin/python3 get-pip.py && rm get-pip.py
 
 COPY ./docker/start.py /start.py
 COPY ./docker/conf /conf
 
-ENV PYTHONUNBUFFERED=1
-ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
-
-COPY pyproject.toml .
-# Workaround to install cryptography . See https://github.com/healthchecks/healthchecks/issues/568
-RUN pip install --find-links https://wheel-index.linuxserver.io/alpine/ setuptools_rust cryptography$(grep "cryptography = " pyproject.toml | cut -d "=" -f 2- | sed 's/"//g' | xargs) && rm pyproject.toml
-
-RUN pip install --prefix="/usr/local" matrix-synapse[postgres]==$(curl --silent "https://api.github.com/repos/matrix-org/synapse/releases/latest" | jq -r .tag_name |  cut -c 2-)
+RUN --mount=type=tmpfs,target=/root/.cargo pip3 install --find-links https://wheel-index.linuxserver.io/ubuntu/ --prefix="/usr/local" matrix-synapse[postgres]==$(curl --silent "https://api.github.com/repos/matrix-org/synapse/releases/latest" | jq -r .tag_name |  cut -c 2-)
 
 EXPOSE 8008/tcp 8009/tcp 8448/tcp
 
