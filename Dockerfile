@@ -22,7 +22,8 @@ ENV PYTHONUNBUFFERED=1
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 
 COPY pyproject.toml .
-RUN pip install setuptools_rust cryptography$(grep "cryptography = " pyproject.toml | cut -d "=" -f 2- | sed 's/"//g' | xargs) && rm pyproject.toml
+# Workaround to install cryptography . See https://github.com/healthchecks/healthchecks/issues/568
+RUN pip install --find-links https://wheel-index.linuxserver.io/alpine/ setuptools_rust cryptography$(grep "cryptography = " pyproject.toml | cut -d "=" -f 2- | sed 's/"//g' | xargs) && rm pyproject.toml
 
 RUN pip install --prefix="/usr/local" matrix-synapse[postgres]==$(curl --silent "https://api.github.com/repos/matrix-org/synapse/releases/latest" | jq -r .tag_name |  cut -c 2-)
 
